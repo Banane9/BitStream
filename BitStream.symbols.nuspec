@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+    <metadata>
+        <id>BitStream</id>
+        <version>1.0.0</version>
+        <title>BitStream</title>
+        <authors>Banane9</authors>
+        <owners>Banane9</owners>
+        <projectUrl>http://github.com/Banane9/BitStream</projectUrl>
+        <iconUrl>http://banane9.github.io/favicon.ico</iconUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>PCL wrapper for the Stream class that allows bit-level reads and writes, for all your sub-byte encoding needs.
+
+Just new up a BitStream instance with the underlaying stream passed to it and off you go.</description>
+        <summary>PCL wrapper for the Stream class that allows bit-level reads and writes.</summary>
+        <releaseNotes>First release.</releaseNotes>
+        <copyright>Banane9</copyright>
+        <language>en</language>
+        <tags>bit, bits, partial, byte, bytes, stream, streams, sub-byte, encoding, decoding, protocol, read, reads, writes</tags>
+    </metadata>
+    <files>
+        <file src="BitStream\bin\Debug\BitStream.dll" target="content\MonoAndroid\BitStream.dll" />
+        <file src="BitStream\bin\Debug\BitStream.pdb" target="content\MonoAndroid\BitStream.pdb" />
+        <file src="BitStream\bin\Debug\BitStream.xml" target="content\MonoAndroid\BitStream.xml" />
+        <file src="BitStream\bin\Debug\BitStream.dll" target="content\MonoTouch\BitStream.dll" />
+        <file src="BitStream\bin\Debug\BitStream.pdb" target="content\MonoTouch\BitStream.pdb" />
+        <file src="BitStream\bin\Debug\BitStream.xml" target="content\MonoTouch\BitStream.xml" />
+        <file src="BitStream\bin\Debug\BitStream.dll" target="content\portable-net45+wp8+win8\BitStream.dll" />
+        <file src="BitStream\bin\Debug\BitStream.pdb" target="content\portable-net45+wp8+win8\BitStream.pdb" />
+        <file src="BitStream\bin\Debug\BitStream.xml" target="content\portable-net45+wp8+win8\BitStream.xml" />
+        <file src="BitStream\Properties\AssemblyInfo.cs" target="src\Properties\AssemblyInfo.cs" />
+        <file src="BitStream\BitNum.cs" target="src\BitNum.cs" />
+        <file src="BitStream\BitStream.cs" target="src\BitStream.cs" />
+    </files>
+</package>
