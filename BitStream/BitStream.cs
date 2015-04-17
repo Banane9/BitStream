@@ -14,6 +14,11 @@ namespace BitStream
 
         private byte currentByte;
 
+        /// <summary>
+        /// Gets or sets the position inside the byte.
+        /// <para/>
+        /// <see cref="BitNum.MaxValue"/> is the last position before the next byte.
+        /// </summary>
         public BitNum BitPosition { get; set; }
 
         #region Proxy Properties
@@ -119,6 +124,15 @@ namespace BitStream
 
         #region Read Methods
 
+        /// <summary>
+        /// Reads the given number of bytes into the buffer, starting at the given offset and returns how many bytes were read.
+        /// <para/>
+        /// Any bytes that could not be read will be set to 0.
+        /// </summary>
+        /// <param name="buffer">The buffer to read into.</param>
+        /// <param name="offset">The offset to start writing into the buffer at.</param>
+        /// <param name="count">The number of bytes to read.</param>
+        /// <returns>How many bytes were actually read.</returns>
         public override int Read(byte[] buffer, int offset, int count)
         {
             if (BitPosition == BitNum.MaxValue)
@@ -127,6 +141,12 @@ namespace BitStream
             return (int)(ReadBits(buffer, offset, (uint)count * BitNum.MaxValue) / BitNum.MaxValue);
         }
 
+        /// <summary>
+        /// Reads the given number of bits into the value and returns whether the stream could be read from or not.
+        /// </summary>
+        /// <param name="value">The value of the read bits.</param>
+        /// <param name="bits">The number of bits to read.</param>
+        /// <returns>Whether the stream could be read from or not.</returns>
         public bool ReadBits(out byte value, BitNum bits)
         {
             if (BitPosition == BitNum.MaxValue && bits == BitNum.MaxValue)
@@ -158,6 +178,15 @@ namespace BitStream
             return true;
         }
 
+        /// <summary>
+        /// Reads the given number of bits into the buffer, starting at the given offset and returns how many bits were read.
+        /// <para/>
+        /// Any bytes that could not be read will be set to 0.
+        /// </summary>
+        /// <param name="buffer">The buffer to read into.</param>
+        /// <param name="offset">The offset to start writing into the buffer at.</param>
+        /// <param name="count">The number of bits to read.</param>
+        /// <returns>How many bits were actually read.</returns>
         public ulong ReadBits(byte[] buffer, int offset, ulong count)
         {
             var bitsRead = 0uL;
@@ -181,6 +210,10 @@ namespace BitStream
             return bitsRead;
         }
 
+        /// <summary>
+        /// Reads a single byte from the stream and returns its value, or -1 if it could not be read.
+        /// </summary>
+        /// <returns>The value that was read, or -1 if it could not be read.</returns>
         public override int ReadByte()
         {
             byte buffer;
@@ -191,6 +224,12 @@ namespace BitStream
 
         #region Write Methods
 
+        /// <summary>
+        /// Writes the given number of bytes from the buffer, starting at the given offset.
+        /// </summary>
+        /// <param name="buffer">The buffer to write from.</param>
+        /// <param name="offset">The offet to start reading from at.</param>
+        /// <param name="count">The number of bytes to write.</param>
         public override void Write(byte[] buffer, int offset, int count)
         {
             if (BitPosition == BitNum.MaxValue)
@@ -202,6 +241,12 @@ namespace BitStream
             WriteBits(buffer, offset, (ulong)count * BitNum.MaxValue);
         }
 
+        /// <summary>
+        /// Writes the given number of bits from the buffer, starting at the given offset.
+        /// </summary>
+        /// <param name="buffer">The buffer to write from.</param>
+        /// <param name="offset">Te offset to start reading from at.</param>
+        /// <param name="count">The number of bits to write.</param>
         public void WriteBits(byte[] buffer, int offset, ulong count)
         {
             while (count > 0)
@@ -215,6 +260,11 @@ namespace BitStream
             }
         }
 
+        /// <summary>
+        /// Writes the given number of bits from the value.
+        /// </summary>
+        /// <param name="value">The value to write from.</param>
+        /// <param name="bits">The number of bits to write.</param>
         public void WriteBits(byte value, BitNum bits)
         {
             if (BitPosition == BitNum.MaxValue && bits == BitNum.MaxValue)
@@ -239,6 +289,10 @@ namespace BitStream
             }
         }
 
+        /// <summary>
+        /// Writes the value.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
         public override void WriteByte(byte value)
         {
             WriteBits(value, BitNum.MaxValue);
