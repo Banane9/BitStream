@@ -168,11 +168,10 @@ namespace BitStream
                         return i > 1;
 
                     currentByte = (byte)readByte;
-                    BitPosition = BitNum.MinValue;
                 }
 
+                advanceBitPosition();
                 value |= getAdjustedValue(currentByte, BitPosition, (BitNum)i);
-                BitPosition = (BitNum)(BitPosition + 1);
             }
 
             return true;
@@ -276,16 +275,14 @@ namespace BitStream
 
             for (byte i = 1; i <= bits; ++i)
             {
+                advanceBitPosition();
+                currentByte |= getAdjustedValue(value, (BitNum)i, BitPosition);
+
                 if (BitPosition == BitNum.MaxValue)
                 {
                     stream.WriteByte(currentByte);
-
                     currentByte = 0;
-                    BitPosition = BitNum.MinValue;
                 }
-
-                currentByte |= getAdjustedValue(value, (BitNum)i, BitPosition);
-                BitPosition = (BitNum)(BitPosition + 1);
             }
         }
 
@@ -310,6 +307,14 @@ namespace BitStream
                 return (byte)(value << (targetPosition - currentPosition));
             else
                 return value;
+        }
+
+        private void advanceBitPosition()
+        {
+            if (BitPosition == BitNum.MaxValue)
+                BitPosition = BitNum.MinValue;
+            else
+                BitPosition = (BitNum)(BitPosition + 1);
         }
     }
 }

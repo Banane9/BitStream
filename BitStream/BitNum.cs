@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BitStream
 {
     public struct BitNum
     {
-        public static readonly BitNum MaxValue = (BitNum)8;
-        public static readonly BitNum MinValue = (BitNum)1;
+        public static readonly BitNum MaxValue = new BitNum(8, true);
+        public static readonly BitNum MinValue = new BitNum(1, true);
 
         private readonly byte value;
 
@@ -23,6 +21,14 @@ namespace BitStream
             this.value = Math.Min(MaxValue, Math.Max(MinValue, value));
         }
 
+        private BitNum(byte value, bool overide)
+        {
+            if (!overide)
+                this = new BitNum(value);
+            else
+                this.value = value;
+        }
+
         public byte GetBitPos()
         {
             return (byte)(1 << (value - 1));
@@ -32,9 +38,24 @@ namespace BitStream
 
         #region From this
 
+        public static implicit operator ushort(BitNum @this)
+        {
+            return @this.value;
+        }
+
         public static implicit operator sbyte(BitNum @this)
         {
             return (sbyte)@this.value;
+        }
+
+        public static implicit operator ulong(BitNum @this)
+        {
+            return @this.value;
+        }
+
+        public static implicit operator int(BitNum @this)
+        {
+            return @this.value;
         }
 
         public static implicit operator byte(BitNum @this)
@@ -42,17 +63,17 @@ namespace BitStream
             return @this.value;
         }
 
+        public static implicit operator double(BitNum @this)
+        {
+            return @this.value;
+        }
+
+        public static implicit operator decimal(BitNum @this)
+        {
+            return @this.value;
+        }
+
         public static implicit operator short(BitNum @this)
-        {
-            return @this.value;
-        }
-
-        public static implicit operator ushort(BitNum @this)
-        {
-            return @this.value;
-        }
-
-        public static implicit operator int(BitNum @this)
         {
             return @this.value;
         }
@@ -67,22 +88,7 @@ namespace BitStream
             return @this.value;
         }
 
-        public static implicit operator ulong(BitNum @this)
-        {
-            return @this.value;
-        }
-
-        public static implicit operator decimal(BitNum @this)
-        {
-            return @this.value;
-        }
-
         public static implicit operator float(BitNum @this)
-        {
-            return @this.value;
-        }
-
-        public static implicit operator double(BitNum @this)
         {
             return @this.value;
         }
