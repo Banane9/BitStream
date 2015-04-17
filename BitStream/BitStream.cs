@@ -158,21 +158,21 @@ namespace BitStream
             }
 
             value = 0;
-            for (byte i = 0; i < bits; ++i)
+            for (byte i = 1; i <= bits; ++i)
             {
                 if (BitPosition == BitNum.MaxValue)
                 {
                     var readByte = stream.ReadByte();
 
                     if (readByte < 0)
-                        return i > 0;
+                        return i > 1;
 
                     currentByte = (byte)readByte;
                     BitPosition = BitNum.MinValue;
                 }
 
-                value |= (byte)(currentByte & BitPosition.GetBitPos());
-                BitPosition = new BitNum((byte)(BitPosition + 1));
+                value |= getAdjustedValue(currentByte, BitPosition, (BitNum)i);
+                BitPosition = (BitNum)(BitPosition + 1);
             }
 
             return true;
@@ -274,7 +274,7 @@ namespace BitStream
                 return;
             }
 
-            for (byte i = 0; i < bits; ++i)
+            for (byte i = 1; i <= bits; ++i)
             {
                 if (BitPosition == BitNum.MaxValue)
                 {
@@ -284,8 +284,8 @@ namespace BitStream
                     BitPosition = BitNum.MinValue;
                 }
 
-                currentByte |= (byte)(value & BitPosition.GetBitPos());
-                BitPosition = new BitNum((byte)(BitPosition + 1));
+                currentByte |= getAdjustedValue(value, (BitNum)i, BitPosition);
+                BitPosition = (BitNum)(BitPosition + 1);
             }
         }
 
@@ -299,5 +299,17 @@ namespace BitStream
         }
 
         #endregion Write Methods
+
+        private static byte getAdjustedValue(byte value, BitNum currentPosition, BitNum targetPosition)
+        {
+            value &= currentPosition.GetBitPos();
+
+            if (currentPosition > targetPosition)
+                return (byte)(value >> (currentPosition - targetPosition));
+            else if (currentPosition < targetPosition)
+                return (byte)(value << (targetPosition - currentPosition));
+            else
+                return value;
+        }
     }
 }
