@@ -117,6 +117,8 @@ namespace BitStream
 
         #endregion Proxy Methods
 
+        #region Read Methods
+
         public override int Read(byte[] buffer, int offset, int count)
         {
             if (BitPosition == BitNum.MaxValue)
@@ -125,16 +127,17 @@ namespace BitStream
             return (int)(ReadBits(buffer, offset, (uint)count * BitNum.MaxValue) / BitNum.MaxValue);
         }
 
-        public bool ReadBits(out byte buffer, BitNum bits)
+        public bool ReadBits(out byte value, BitNum bits)
         {
             if (BitPosition == BitNum.MaxValue && bits == BitNum.MaxValue)
             {
                 var readByte = stream.ReadByte();
-                buffer = (byte)(readByte < 0 ? 0 : readByte);
+                value = (byte)(readByte < 0 ? 0 : readByte);
+                currentByte = value;
                 return !(readByte < 0);
             }
 
-            buffer = 0;
+            value = 0;
             for (byte i = 0; i < bits; ++i)
             {
                 if (BitPosition == BitNum.MaxValue)
@@ -148,7 +151,7 @@ namespace BitStream
                     BitPosition = BitNum.MinValue;
                 }
 
-                buffer |= (byte)(currentByte & BitPosition.GetBitPos());
+                value |= (byte)(currentByte & BitPosition.GetBitPos());
                 BitPosition = new BitNum((byte)(BitPosition + 1));
             }
 
@@ -157,28 +160,23 @@ namespace BitStream
 
         public ulong ReadBits(byte[] buffer, int offset, ulong count)
         {
-            ulong bitsRead = 0;
-            while (count / BitNum.MaxValue > 0)
+            var bitsRead = 0uL;
+            while (count > 0)
             {
-                var nextByte = ReadByte();
+                byte nextByte;
+                var bits = (BitNum)count;
 
-                if (nextByte < 0)
+                if (!ReadBits(out nextByte, bits))
                     buffer[offset] = 0;
                 else
                 {
                     buffer[offset] = (byte)nextByte;
-                    bitsRead += BitNum.MaxValue;
+                    bitsRead += bits;
                 }
 
                 ++offset;
+                count -= bits;
             }
-
-            byte lastByte;
-            var bits = (BitNum)(count % BitNum.MaxValue);
-            if (ReadBits(out lastByte, bits))
-                bitsRead += bits;
-
-            buffer[offset] = lastByte;
 
             return bitsRead;
         }
@@ -189,27 +187,63 @@ namespace BitStream
             return ReadBits(out buffer, BitNum.MaxValue) ? buffer : -1;
         }
 
+        #endregion Read Methods
+
+        #region Write Methods
+
         public override void Write(byte[] buffer, int offset, int count)
         {
             if (BitPosition == BitNum.MaxValue)
+            {
                 stream.Write(buffer, offset, count);
+                currentByte = 0;
+            }
 
-            WriteBits(buffer, offset, (uint)count * 8);
+            WriteBits(buffer, offset, (ulong)count * BitNum.MaxValue);
         }
 
-        public void WriteBits(byte[] buffer, int offset, ulong p)
+        public void WriteBits(byte[] buffer, int offset, ulong count)
         {
-            throw new NotImplementedException();
+            while (count > 0)
+            {
+                var bits = (BitNum)count;
+
+                WriteBits(buffer[offset], bits);
+
+                ++offset;
+                count -= bits;
+            }
         }
 
-        public void WriteBits(byte buffer, BitNum bits)
+        public void WriteBits(byte value, BitNum bits)
         {
-            throw new NotImplementedException();
+            if (BitPosition == BitNum.MaxValue && bits == BitNum.MaxValue)
+            {
+                stream.WriteByte(value);
+                currentByte = 0;
+                return;
+            }
+
+            for (byte i = 0; i < bits; ++i)
+            {
+                if (BitPosition == BitNum.MaxValue)
+                {
+                    stream.WriteByte(currentByte);
+
+                    currentByte = 0;
+                    BitPosition = BitNum.MinValue;
+                }
+
+                currentByte |= (byte)(value & BitPosition.GetBitPos());
+                BitPosition = new BitNum((byte)(BitPosition + 1));
+            }
         }
 
         public override void WriteByte(byte value)
         {
-            throw new NotImplementedException();
+            WriteBits(value, BitNum.MaxValue);
         }
+
+        #endregion Write Methods
     }
 }
