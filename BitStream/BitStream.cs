@@ -2,21 +2,21 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 
 namespace BitStream
 {
     /// <summary>
-    /// Represents a
+    /// Wrapper for <see cref="Stream"/>s that allows bit-level reads and writes.
     /// </summary>
     public sealed class BitStream : Stream
     {
         private readonly Stream stream;
 
-        public Stream UnderlayingStream
-        {
-            get { return stream; }
-        }
+        private byte currentByte;
+
+        public BitNum BitPosition { get; set; }
+
+        #region Proxy Properties
 
         public override bool CanRead
         {
@@ -28,14 +28,14 @@ namespace BitStream
             get { return stream.CanSeek; }
         }
 
+        public override bool CanTimeout
+        {
+            get { return stream.CanTimeout; }
+        }
+
         public override bool CanWrite
         {
             get { return stream.CanWrite; }
-        }
-
-        public override void Flush()
-        {
-            stream.Flush();
         }
 
         public override long Length
@@ -49,53 +49,83 @@ namespace BitStream
             set { stream.Position = value; }
         }
 
-        public BitNum BitPosition { get; set; }
+        public override int ReadTimeout
+        {
+            get { return stream.ReadTimeout; }
+            set { stream.ReadTimeout = value; }
+        }
+
+        public Stream UnderlayingStream
+        {
+            get { return stream; }
+        }
+
+        public override int WriteTimeout
+        {
+            get { return stream.WriteTimeout; }
+            set { stream.WriteTimeout = value; }
+        }
+
+        #endregion Proxy Properties
+
+        /// <summary>
+        /// Creates a new instance of the <see cref="BitStream"/> class with the given underlaying stream.
+        /// </summary>
+        /// <param name="underlayingStream">The underlaying stream to work on.</param>
+        public BitStream(Stream underlayingStream)
+        {
+            BitPosition = BitNum.MaxValue;
+            stream = underlayingStream;
+        }
+
+        #region Proxy Methods
+
+        public override bool Equals(object obj)
+        {
+            return stream.Equals(obj);
+        }
+
+        public override void Flush()
+        {
+            stream.Flush();
+        }
+
+        public override int GetHashCode()
+        {
+            return stream.GetHashCode();
+        }
+
+        public override long Seek(long offset, SeekOrigin origin)
+        {
+            return stream.Seek(offset, origin);
+        }
+
+        public override void SetLength(long value)
+        {
+            stream.SetLength(value);
+        }
+
+        public override string ToString()
+        {
+            return stream.ToString();
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            stream.Dispose();
+        }
+
+        #endregion Proxy Methods
 
         public override int Read(byte[] buffer, int offset, int count)
         {
             if (BitPosition == BitNum.MaxValue)
                 return stream.Read(buffer, offset, count);
 
-            return (int)(BitRead(buffer, offset, (uint)count * BitNum.MaxValue) / BitNum.MaxValue);
+            return (int)(ReadBits(buffer, offset, (uint)count * BitNum.MaxValue) / BitNum.MaxValue);
         }
 
-        public ulong BitRead(byte[] buffer, int offset, ulong count)
-        {
-            ulong bitsRead = 0;
-            while (count / BitNum.MaxValue > 0)
-            {
-                var nextByte = ReadByte();
-
-                if (nextByte < 0)
-                    buffer[offset] = 0;
-                else
-                {
-                    buffer[offset] = (byte)nextByte;
-                    bitsRead += BitNum.MaxValue;
-                }
-
-                ++offset;
-            }
-
-            byte lastByte;
-            var bits = (BitNum)(count % BitNum.MaxValue);
-            if (BitRead(out lastByte, bits))
-                bitsRead += bits;
-
-            buffer[offset] = lastByte;
-
-            return bitsRead;
-        }
-
-        public override int ReadByte()
-        {
-            byte buffer;
-            return BitRead(out buffer, BitNum.MaxValue) ? buffer : -1;
-        }
-
-        private byte currentByte;
-
-        public bool BitRead(out byte buffer, BitNum bits)
+        public bool ReadBits(out byte buffer, BitNum bits)
         {
             if (BitPosition == BitNum.MaxValue && bits == BitNum.MaxValue)
             {
@@ -125,14 +155,38 @@ namespace BitStream
             return true;
         }
 
-        public override long Seek(long offset, SeekOrigin origin)
+        public ulong ReadBits(byte[] buffer, int offset, ulong count)
         {
-            return stream.Seek(offset, origin);
+            ulong bitsRead = 0;
+            while (count / BitNum.MaxValue > 0)
+            {
+                var nextByte = ReadByte();
+
+                if (nextByte < 0)
+                    buffer[offset] = 0;
+                else
+                {
+                    buffer[offset] = (byte)nextByte;
+                    bitsRead += BitNum.MaxValue;
+                }
+
+                ++offset;
+            }
+
+            byte lastByte;
+            var bits = (BitNum)(count % BitNum.MaxValue);
+            if (ReadBits(out lastByte, bits))
+                bitsRead += bits;
+
+            buffer[offset] = lastByte;
+
+            return bitsRead;
         }
 
-        public override void SetLength(long value)
+        public override int ReadByte()
         {
-            stream.SetLength(value);
+            byte buffer;
+            return ReadBits(out buffer, BitNum.MaxValue) ? buffer : -1;
         }
 
         public override void Write(byte[] buffer, int offset, int count)
@@ -140,22 +194,22 @@ namespace BitStream
             if (BitPosition == BitNum.MaxValue)
                 stream.Write(buffer, offset, count);
 
-            BitWrite(buffer, offset, (uint)count * 8);
+            WriteBits(buffer, offset, (uint)count * 8);
         }
 
-        private void BitWrite(byte[] buffer, int offset, ulong p)
+        public void WriteBits(byte[] buffer, int offset, ulong p)
         {
             throw new NotImplementedException();
         }
 
-        /// <summary>
-        /// Creates a new instance of the <see cref="BitStream"/> class with the given underlaying stream.
-        /// </summary>
-        /// <param name="underlayingStream">The underlaying stream to work on.</param>
-        public BitStream(Stream underlayingStream)
+        public void WriteBits(byte buffer, BitNum bits)
         {
-            BitPosition = BitNum.MaxValue;
-            stream = underlayingStream;
+            throw new NotImplementedException();
+        }
+
+        public override void WriteByte(byte value)
+        {
+            throw new NotImplementedException();
         }
     }
 }
