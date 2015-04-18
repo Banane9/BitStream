@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>BitStream</id>
-        <version>1.0.0</version>
+        <version>1.0.3</version>
         <title>BitStream</title>
         <authors>Banane9</authors>
         <owners>Banane9</owners>
@@ -13,21 +13,21 @@
 
 Just new up a BitStream instance with the underlaying stream passed to it and off you go.</description>
         <summary>PCL wrapper for the Stream class that allows bit-level reads and writes.</summary>
-        <releaseNotes>First release.</releaseNotes>
+        <releaseNotes>Add more constructors and custom equality to the BitNum struct.</releaseNotes>
         <copyright>Banane9</copyright>
         <language>en</language>
         <tags>bit, bits, partial, byte, bytes, stream, streams, sub-byte, encoding, decoding, protocol, read, reads, writes</tags>
     </metadata>
     <files>
-        <file src="BitStream\bin\Debug\BitStream.dll" target="content\MonoAndroid\BitStream.dll" />
-        <file src="BitStream\bin\Debug\BitStream.pdb" target="content\MonoAndroid\BitStream.pdb" />
-        <file src="BitStream\bin\Debug\BitStream.xml" target="content\MonoAndroid\BitStream.xml" />
-        <file src="BitStream\bin\Debug\BitStream.dll" target="content\MonoTouch\BitStream.dll" />
-        <file src="BitStream\bin\Debug\BitStream.pdb" target="content\MonoTouch\BitStream.pdb" />
-        <file src="BitStream\bin\Debug\BitStream.xml" target="content\MonoTouch\BitStream.xml" />
-        <file src="BitStream\bin\Debug\BitStream.dll" target="content\portable-net45+wp8+win8\BitStream.dll" />
-        <file src="BitStream\bin\Debug\BitStream.pdb" target="content\portable-net45+wp8+win8\BitStream.pdb" />
-        <file src="BitStream\bin\Debug\BitStream.xml" target="content\portable-net45+wp8+win8\BitStream.xml" />
+        <file src="BitStream\bin\Debug\BitStream.dll" target="lib\MonoAndroid\BitStream.dll" />
+        <file src="BitStream\bin\Debug\BitStream.pdb" target="lib\MonoAndroid\BitStream.pdb" />
+        <file src="BitStream\bin\Debug\BitStream.xml" target="lib\MonoAndroid\BitStream.xml" />
+        <file src="BitStream\bin\Debug\BitStream.dll" target="lib\MonoTouch\BitStream.dll" />
+        <file src="BitStream\bin\Debug\BitStream.pdb" target="lib\MonoTouch\BitStream.pdb" />
+        <file src="BitStream\bin\Debug\BitStream.xml" target="lib\MonoTouch\BitStream.xml" />
+        <file src="BitStream\bin\Debug\BitStream.dll" target="lib\portable-net45+win+wpa81+wp80+MonoAndroid10+MonoTouch10\BitStream.dll" />
+        <file src="BitStream\bin\Debug\BitStream.pdb" target="lib\portable-net45+win+wpa81+wp80+MonoAndroid10+MonoTouch10\BitStream.pdb" />
+        <file src="BitStream\bin\Debug\BitStream.xml" target="lib\portable-net45+win+wpa81+wp80+MonoAndroid10+MonoTouch10\BitStream.xml" />
         <file src="BitStream\Properties\AssemblyInfo.cs" target="src\Properties\AssemblyInfo.cs" />
         <file src="BitStream\BitNum.cs" target="src\BitNum.cs" />
         <file src="BitStream\BitStream.cs" target="src\BitStream.cs" />
